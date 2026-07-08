@@ -1,6 +1,5 @@
 package com.example.be.project.service.query;
 
-import com.example.be.project.domain.Project;
 import com.example.be.project.dto.result.ProjectResult;
 import com.example.be.project.dto.result.ProjectSummaryResult;
 import com.example.be.project.exception.ProjectNotFoundException;
@@ -19,9 +18,8 @@ public class ProjectQueryService {
     private final ProjectRepository projectRepository;
 
     public ProjectResult get(Long projectId) {
-        Project project = projectRepository.findById(projectId)
+        return projectRepository.findResultById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException(projectId));
-        return ProjectResult.from(project);
     }
 
     public Page<ProjectSummaryResult> getSummaries(Pageable pageable) {

@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,7 +62,7 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<Page<ProjectSummaryResponse>> getProjects(
-            Pageable pageable
+            @PageableDefault(size = 20) Pageable pageable
     ) {
         Page<ProjectSummaryResult> results = projectQueryService.getSummaries(pageable);
         return ResponseEntity.ok(results.map(ProjectSummaryResponse::from));
