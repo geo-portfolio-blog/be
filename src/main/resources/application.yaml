@@ -1,0 +1,31 @@
+app:
+  admin:
+    # 사이트 소유자(관리자) 자격 증명. 시크릿은 환경 변수로만 주입한다.
+    # password-hash 는 평문이 아닌 BCrypt 해시 값이어야 한다. 미설정 시 어떤 로그인도 통과하지 못한다.
+    username: ${ADMIN_USERNAME:admin}
+    password-hash: ${ADMIN_PASSWORD_HASH:}
+
+spring:
+  application:
+    name: be
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
