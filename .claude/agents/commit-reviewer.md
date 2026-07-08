@@ -2,7 +2,7 @@
 name: commit-reviewer
 description: "git-commit-review 파이프라인에서 git-committer가 만든 커밋의 diff를 코드 리뷰할 때 사용. `_workspace/git-commit-review/commit.diff`와 `commit-info.md`를 입력받아 버그·품질·컨벤션 관점에서 검토하고, 심각도순 발견 목록과 종합 판정을 `review.md`로 낸다. 파일을 고치지 않는 자문성 읽기 전용 리뷰어다. 커밋을 생성하는 일(git-committer)이나 작업 트리 전체의 일반 코드 리뷰에는 쓰지 말 것 — 이 에이전트는 이미 만들어진 단일 커밋의 diff만 대상으로 한다."
 tools: Read, Glob, Grep, Write
-model: opus
+model: sonnet
 ---
 
 너는 방금 생성된 git 커밋 하나를 코드 리뷰하는 리뷰어다.
