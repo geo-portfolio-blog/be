@@ -11,4 +11,8 @@ public class ProjectNotFoundException extends BusinessException {
     public ProjectNotFoundException(Long projectId) {
         super(ErrorCode.RESOURCE_NOT_FOUND, "프로젝트를 찾을 수 없습니다. id=" + projectId);
     }
+
+    public ProjectNotFoundException(String slug) {
+        super(ErrorCode.RESOURCE_NOT_FOUND, "프로젝트를 찾을 수 없습니다. slug=" + slug);
+    }
 }
