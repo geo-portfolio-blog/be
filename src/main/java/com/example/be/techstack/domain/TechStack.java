@@ -13,18 +13,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 보유 기술 스택. 기술 스택 사진, 분류, 이름, 실력 점수(1~5)를 가진다.
+ * 보유 기술 스택. 분류(카테고리)별로 묶어 보여주며, 스킬마다 부가 설명(note)을 노출한다.
  *
- * <p>실력 점수는 1~5 범위라는 도메인 불변식을 가지므로 생성·변경 시점에 검증한다.
+ * <p>이미지는 선택이다(프론트는 카테고리 아이콘을 쓰고 스킬 이미지는 필수로 요구하지 않는다).
+ * 같은 카테고리 안에서의 노출 순서는 {@code sortOrder}로 관리한다.
  */
 @Entity
 @Table(name = "tech_stack")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TechStack {
-
-    private static final int MIN_PROFICIENCY = 1;
-    private static final int MAX_PROFICIENCY = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,30 +35,45 @@ public class TechStack {
     @Column(name = "category", nullable = false, length = 20)
     private TechStackCategory category;
 
-    @Column(name = "image_url", nullable = false, length = 1000)
+    /** 스킬별 부가 설명. 이력 화면에서 스킬명 아래에 노출한다. */
+    @Column(name = "note", nullable = false, length = 500)
+    private String note;
+
+    /** 스킬 이미지 URL. 선택 항목이다. */
+    @Column(name = "image_url", length = 1000)
     private String imageUrl;
 
-    @Column(name = "proficiency", nullable = false)
-    private int proficiency;
+    /** 같은 카테고리 안에서의 노출 순서. 값이 작을수록 먼저 노출한다. */
+    @Column(name = "sort_order", nullable = false)
+    private int sortOrder;
 
-    private TechStack(String name, TechStackCategory category, String imageUrl, int proficiency) {
+    private TechStack(String name, TechStackCategory category, String note, String imageUrl, int sortOrder) {
         validateName(name);
         validateCategory(category);
-        validateImageUrl(imageUrl);
-        validateProficiency(proficiency);
+        validateNote(note);
         this.name = name;
         this.category = category;
+        this.note = note;
         this.imageUrl = imageUrl;
-        this.proficiency = proficiency;
+        this.sortOrder = sortOrder;
     }
 
-    public static TechStack create(String name, TechStackCategory category, String imageUrl, int proficiency) {
-        return new TechStack(name, category, imageUrl, proficiency);
+    public static TechStack create(String name, TechStackCategory category, String note, String imageUrl, int sortOrder) {
+        return new TechStack(name, category, note, imageUrl, sortOrder);
     }
 
-    public void changeProficiency(int proficiency) {
-        validateProficiency(proficiency);
-        this.proficiency = proficiency;
+    /**
+     * 항목 전체를 새 값으로 교체한다(PUT 의미). 불변식은 변경 시점에 다시 검증한다.
+     */
+    public void update(String name, TechStackCategory category, String note, String imageUrl, int sortOrder) {
+        validateName(name);
+        validateCategory(category);
+        validateNote(note);
+        this.name = name;
+        this.category = category;
+        this.note = note;
+        this.imageUrl = imageUrl;
+        this.sortOrder = sortOrder;
     }
 
     private void validateName(String name) {
@@ -75,15 +88,9 @@ public class TechStack {
         }
     }
 
-    private void validateImageUrl(String imageUrl) {
-        if (imageUrl == null || imageUrl.isBlank()) {
-            throw new IllegalArgumentException("기술 스택 이미지 URL은 필수입니다.");
-        }
-    }
-
-    private void validateProficiency(int proficiency) {
-        if (proficiency < MIN_PROFICIENCY || proficiency > MAX_PROFICIENCY) {
-            throw new IllegalArgumentException("실력 점수는 1점 이상 5점 이하여야 합니다.");
+    private void validateNote(String note) {
+        if (note == null || note.isBlank()) {
+            throw new IllegalArgumentException("기술 스택 설명은 필수입니다.");
         }
     }
 }

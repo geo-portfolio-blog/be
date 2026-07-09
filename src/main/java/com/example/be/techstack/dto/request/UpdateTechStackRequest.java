@@ -6,10 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
- * 기술 스택 등록 요청. 설명(note)은 필수, 이미지는 선택이다.
- * 이미지는 실제 업로드가 아닌 저장된 URL 문자열로 받는다고 가정한다.
+ * 기술 스택 수정 요청(PUT 의미: 항목 전체를 새 값으로 교체). 입력 형식 검증 규칙은 생성 요청과 같다.
  */
-public record CreateTechStackRequest(
+public record UpdateTechStackRequest(
         @NotBlank
         @Size(max = 100)
         String name,

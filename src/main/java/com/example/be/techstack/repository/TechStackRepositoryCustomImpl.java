@@ -15,19 +15,20 @@ public class TechStackRepositoryCustomImpl implements TechStackRepositoryCustom 
 
     @Override
     public List<TechStackResult> findAllResults() {
-        // 목록 조회 시점에 Result로 직접 Projection한다. 이력 화면에서 분류별로 묶고
-        // 실력 점수가 높은 순으로 노출할 수 있도록 category, proficiency 기준으로 정렬한다.
+        // 목록 조회 시점에 Result로 직접 Projection한다. 이력 화면에서 분류별로 묶어 노출할 수 있도록
+        // category 기준으로 정렬하고, 같은 분류 안에서는 sortOrder, name 순으로 안정 정렬한다.
         return queryFactory
                 .select(Projections.constructor(
                         TechStackResult.class,
                         techStack.id,
                         techStack.name,
                         techStack.category,
+                        techStack.note,
                         techStack.imageUrl,
-                        techStack.proficiency
+                        techStack.sortOrder
                 ))
                 .from(techStack)
-                .orderBy(techStack.category.asc(), techStack.proficiency.desc(), techStack.name.asc())
+                .orderBy(techStack.category.asc(), techStack.sortOrder.asc(), techStack.name.asc())
                 .fetch();
     }
 }
