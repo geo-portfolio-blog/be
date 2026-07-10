@@ -30,15 +30,27 @@
 - 목록: 순서 있는 단일 컬렉션(points)이라 fetch join 1개로 로딩 후 Java `distinct()`로 루트 중복 제거,
   유형→sortOrder→시작일 내림차순 정렬. 전체 `List` 반환(소규모 고정 목록).
 
-## 3. TechStack (이력의 Technical Expertise) — 재설계
+## 3. TechPart (이력의 Technical Expertise) — 재설계 (Part 애그리거트)
 
-- 필드: `name` · `category`(enum) · **`note`(필수, 부가 설명)** · `imageUrl`(**nullable**) · `sortOrder`.
-- **결정**: 기존 `proficiency`(1~5) **제거**(FE 미사용), `imageUrl`은 **nullable로 강등**(FE는 카테고리
-  아이콘을 쓰고 스킬 이미지는 필수 요구 안 함), **`note` 추가**(FE 핵심).
-- `category` enum = **`BACKEND` · `DEVOPS` · `OTHERS`** (FE의 Backend/DevOps/Others 3개에 정합.
-  기존 `AI`/`ETC`는 정리). ⚠️ **Project의 카테고리 enum과는 별개**(값도 다름 — 아래 4 참조).
-- `sortOrder` 추가 이유: 2차 정렬 기준이던 proficiency가 사라져 카테고리 내 정렬 기준이 필요.
-- 목록: category→sortOrder→name 정렬, 전체 `List` 반환.
+> **이력**: 처음엔 평면 `TechStack`(`name`·`category`(enum)·`note`·`imageUrl`·`sortOrder`, 한 행 = 스킬 1개,
+> 그룹핑은 category enum으로 FE가 클라이언트에서 묶음)으로 설계했다. 이후 FE의 `SkillCategory { name, skills:[...] }`
+> 구조와 1:1로 맞추기 위해 **분류(Part)를 1급 애그리거트로 승격**하는 재설계로 교체했다(평면 TechStack 도메인 제거).
+
+- **애그리거트**: `TechPart`(루트) — `name`(분류 표시명, 자유 문자열, 예: "Backend") · `sortOrder`(분류 노출 순서) ·
+  `skills`(스킬 목록).
+- **스킬**: `TechSkill`(@Embeddable 값 객체) `{name, note}`. 자체 식별자/생명주기가 없어 Part가 소유하는
+  `@ElementCollection` + `@OrderColumn`(`tech_part_skill`)으로 순서 보존. 스킬은 루트(Part)를 통해서만 교체.
+- **결정**:
+  - category enum(BACKEND/DEVOPS/OTHERS)을 **제거하고 Part 이름을 자유 문자열로**. 소유자가 분류를 자유롭게
+    추가/수정/삭제 → "계속 늘어나면 DB+CRUD" 기준에 부합(§0).
+  - 기존 `imageUrl`은 **미도입**(FE는 분류 아이콘을 쓰고 스킬 이미지는 요구 안 함). `proficiency`도 미도입(FE 미사용).
+  - 스킬 설명은 **스킬당 1줄(`note`)**. FE가 스킬명 아래 한 줄 캡션으로 노출.
+- **API**: 리소스 `/api/tech-parts`. 목록 `GET`은 분류별로 스킬을 묶어 `List<TechPartResponse>` 전체 반환
+  (`{id, name, sortOrder, skills:[{name, note}]}`). CRUD는 Part 단위(생성 201 · 단건 200 · 수정 PUT 200=전체 교체 ·
+  삭제 204). 수정/삭제는 **id 기준**.
+- **목록 조회**: 순서 있는 단일 컬렉션(skills)이라 fetch join 1개로 로딩 후 Java `distinct()`로 루트 중복 제거,
+  Part는 sortOrder→name 정렬(Experience 목록과 같은 패턴).
+- ⚠️ Project 상세의 Tech Stack 표(`ProjectTech`)와는 **여전히 별개**(목적이 달라 재사용 안 함, §4 참조).
 
 ## 4. Project (목록 카드 + 케이스스터디 상세) — 재설계
 

@@ -15,6 +15,15 @@ spring:
     password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  flyway:
+    # 스키마는 Hibernate(ddl-auto)가 계속 관리하고, Flyway는 데이터 시드 마이그레이션만 담당한다.
+    # 이미 테이블이 존재하는 기존 DB를 첫 대상으로 하므로 현재 상태를 버전 0 베이스라인으로 잡고
+    # 그 위(V1~)의 마이그레이션만 적용한다.
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    encoding: UTF-8
+
   jpa:
     open-in-view: false
     hibernate:
