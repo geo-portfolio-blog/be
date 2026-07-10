@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.OrderColumn;
@@ -80,18 +79,15 @@ public class Project {
     @Embedded
     private DevelopmentPeriod period;
 
-    @Lob
-    @Column(name = "overview")
+    @Column(name = "overview", columnDefinition = "LONGTEXT")
     private String overview;
 
     /** 아키텍처 설계 이유(해결 방법) 섹션 본문. */
-    @Lob
-    @Column(name = "architecture")
+    @Column(name = "architecture", columnDefinition = "LONGTEXT")
     private String architecture;
 
     /** 결론 섹션의 서술형 본문. 지표(metrics)가 없을 수도 있으므로 텍스트만으로 결론을 채울 수 있다. */
-    @Lob
-    @Column(name = "conclusion")
+    @Column(name = "conclusion", columnDefinition = "LONGTEXT")
     private String conclusion;
 
     @ElementCollection
@@ -100,8 +96,7 @@ public class Project {
     private List<Metric> metrics = new ArrayList<>();
 
     /** Troubleshooting의 "상황 & 원인" 본문. */
-    @Lob
-    @Column(name = "troubleshooting_situation")
+    @Column(name = "troubleshooting_situation", columnDefinition = "LONGTEXT")
     private String troubleshootingSituation;
 
     /** Troubleshooting의 "해결 & 결과" 불릿. */
