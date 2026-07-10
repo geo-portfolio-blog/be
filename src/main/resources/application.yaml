@@ -25,6 +25,15 @@ spring:
         jdbc:
           time_zone: Asia/Seoul
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    # 태그(도메인)와 메서드를 알파벳/HTTP 순으로 정렬해 문서를 안정적으로 노출한다.
+    tags-sorter: alpha
+    operations-sorter: method
+
 logging:
   level:
     org.hibernate.SQL: debug
