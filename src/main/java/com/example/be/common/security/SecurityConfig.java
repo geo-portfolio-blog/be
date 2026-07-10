@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // API 문서(OpenAPI 명세 + Swagger UI)는 공개.
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         // 포트폴리오 콘텐츠 조회는 공개.
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         // 그 외(쓰기 포함) 모든 요청은 관리자 인증 필요 (deny-by-default).
